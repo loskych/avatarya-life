@@ -92,7 +92,7 @@
       line-height:1.12;
       letter-spacing:-0.04em;
     }
-    .lead{ margin:0; color:var(--muted); font-size:15px; max-width:70ch; }
+    .lead{ margin:0; color:var(--muted); font-size:15px; max-width:72ch; }
 
     main{
       margin-top:14px;
@@ -123,7 +123,7 @@
       padding:12px;
       margin:10px 0 0;
     }
-    .row{ display:flex; align-items:center; gap:10px; }
+    .row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
     .tag{
       font-family:var(--mono);
       font-size:12px;
@@ -137,6 +137,8 @@
     @media (prefers-color-scheme: light){ .tag{ background:rgba(255,255,255,.55); } }
     .item h3{ margin:0; font-size:14px; }
     .item p{ margin:6px 0 0; color:var(--muted); font-size:13px; }
+    .item ul{ margin:8px 0 0 18px; color:var(--muted); font-size:13px; }
+    .item li{ margin:6px 0; }
 
     .hint{
       margin-top:12px;
@@ -148,6 +150,10 @@
       font-size:13px;
     }
     .hint b{ color:var(--text); }
+    a{ color:inherit; }
+    .links a{ color:var(--a); text-decoration:none; border-bottom:1px solid rgba(138,180,255,.35); }
+    .links a:hover{ border-bottom-color: rgba(138,180,255,.7); }
+
     footer{
       margin-top:14px;
       color:var(--muted);
@@ -157,6 +163,18 @@
     }
     .k{ color:var(--text); font-weight:700; }
     .ok{ color:var(--g); font-weight:700; }
+
+    .mini{
+      display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;
+    }
+    .mini .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px; border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--stroke);
+      color:var(--muted); font-size:12px;
+    }
+    .chip i{ width:8px; height:8px; border-radius:50%; background:var(--g); display:inline-block; box-shadow:0 0 0 4px rgba(110,231,183,.12); }
   </style>
 </head>
 <body>
@@ -166,14 +184,19 @@
         <div class="logo" aria-hidden="true"></div>
         <div><small>Avataria</small></div>
       </div>
-      <div class="pill"><span class="dot" aria-hidden="true"></span>коротко и без воды</div>
+      <div class="pill"><span class="dot" aria-hidden="true"></span>коротко и по делу</div>
     </header>
 
     <section class="hero">
       <h1>Аватария - скрытые фишки и малоочевидные факты</h1>
       <p class="lead">
-        Только то, что можно использовать в игре нормально: интерфейсные фишки, неочевидные механики, где люди чаще всего тупят.
+        Тут без читов, без багов и без клоунады. Только легальные фишки: где спрятано нужное, что реально ускоряет прокачку, и что люди годами делают криво.
       </p>
+      <div class="mini" aria-label="краткая выжимка">
+        <div class="chip"><i aria-hidden="true"></i>трать ресурсы только под ивенты</div>
+        <div class="chip"><i aria-hidden="true"></i>не распыляйся: 1 цель за раз</div>
+        <div class="chip"><i aria-hidden="true"></i>энергия - самая дорогая валюта</div>
+      </div>
     </section>
 
     <main>
@@ -182,20 +205,36 @@
 
         <div class="item">
           <div class="row"><span class="tag">UI-01</span><h3>Промокоды</h3></div>
-          <p>Пункт ввода часто спрятан в разделе помощи/меню (его многие не открывают вообще). Коды обычно ограничены по времени - вводить надо быстро.</p>
+          <p>
+            Ввод промокода часто ищут “в настройках”, хотя он обычно лежит в банковских разделах.
+            Если у тебя паника “где вводить”, чекни путь <span class="k">Банк - Бесплатно - Активировать</span>.
+          </p>
         </div>
 
         <div class="item">
           <div class="row"><span class="tag">UI-02</span><h3>Задания “сделай фото”</h3></div>
-          <p>Там обычно важно: <span class="k">позы должны отличаться</span>, а второй участник добавляется прямо в экране съемки, не “до” него.</p>
+          <p>
+            В квестах с фотками чаще всего валятся на мелочи: позы должны реально отличаться, и второго участника удобнее добавлять прямо на экране съемки.
+          </p>
         </div>
 
         <div class="item">
           <div class="row"><span class="tag">UI-03</span><h3>Временные витрины</h3></div>
-          <p>Часть предметов появляется только в конкретные окна (ивент/праздник). Если пропустил - может не вернуться месяцами.</p>
+          <p>
+            Если вещь помечена как временная, не “подумаю завтра”. Завтра ее может не быть.
+            У многих редких штук окно короткое, особенно на праздники и коллабах.
+          </p>
         </div>
 
-        <div class="hint"><b>Лайфхак:</b> если видишь слово “временно”, делай это сейчас. Постоянное можно добрать потом.</div>
+        <div class="item">
+          <div class="row"><span class="tag">UI-04</span><h3>Подарки и “не забрал - сгорело”</h3></div>
+          <p>
+            Дары от игры и друзей люди часто пропускают, потому что “потом открою”.
+            Привычка простая: заходишь - <span class="k">сначала забираешь все бесплатное</span>, потом уже тусуешься.
+          </p>
+        </div>
+
+        <div class="hint"><b>Лайфхак:</b> все, что “бесплатно” и “ограничено”, забирай сразу. Постоянное доберешь потом.</div>
       </section>
 
       <section class="card">
@@ -203,20 +242,238 @@
 
         <div class="item">
           <div class="row"><span class="tag">META-01</span><h3>Ивенты почти всегда выгоднее рутины</h3></div>
-          <p>Даже если награда кажется маленькой, суммарно за неделю ивенты дают больше, чем однообразные действия.</p>
+          <p>
+            Рутинные действия хороши, когда “просто зайти на 10 минут”.
+            Но если хочешь прирост, то ивенты обычно дают больше суммарной выгоды за те же ресурсы.
+          </p>
         </div>
 
         <div class="item">
           <div class="row"><span class="tag">META-02</span><h3>“Дорого” выглядит не редкостью</h3></div>
-          <p>Рабочая формула: <span class="k">1 акцент</span> + спокойная база. Так меньше слива валюты и больше “вау”.</p>
+          <p>
+            Рабочая формула стиля: <span class="k">1 акцент</span> + спокойная база.
+            Это экономит валюту и делает образ цельным, а не “все нацепил”.
+          </p>
         </div>
 
         <div class="item">
           <div class="row"><span class="tag">META-03</span><h3>Режим “одна цель”</h3></div>
-          <p>Выбери одно: гардероб или интерьер или профессии. Когда размазываешься по всему, прогресс кажется медленным.</p>
+          <p>
+            Выбираешь одно: гардероб или интерьер или прокачка профессий.
+            Когда распыляешься, ощущение прогресса пропадает, хотя ты тратишь столько же.
+          </p>
         </div>
 
-        <div class="hint"><span class="ok">Топ-ход:</span> копи ресурсы под ближайшее событие и трать только там - так чаще забирают редкое.</div>
+        <div class="item">
+          <div class="row"><span class="tag">META-04</span><h3>Комфорт и имидж - это не “для красоты”</h3></div>
+          <p>
+            Многие квесты и “пороги” в игре упираются в показатели. Поэтому иногда выгоднее купить пару правильных вещей,
+            чем бесконечно фармить одно и то же.
+          </p>
+        </div>
+
+        <div class="hint"><span class="ok">Топ-ход:</span> копи ресурсы под ближайшее событие и трать только там - так чаще забирают редкое и не остаются “с пустыми руками”.</div>
+      </section>
+
+      <section class="card">
+        <h2>Прокачка без доната: что реально ускоряет</h2>
+
+        <div class="item">
+          <div class="row"><span class="tag">GRIND-01</span><h3>Энергия - главный лимитер</h3></div>
+          <p>
+            В Аватарии все крутится вокруг энергии: действия, работа, часть взаимодействий. Энергию тратить можно “в ноль”, а можно так, чтобы она всегда работала на цель.
+          </p>
+          <ul>
+            <li><span class="k">Не сливай энергию на рандом</span>, если у тебя сейчас цель - квесты или профессия.</li>
+            <li>Если цель - деньги, держи энергию на те активности, которые конвертят ее в валюту быстрее.</li>
+          </ul>
+        </div>
+
+        <div class="item">
+          <div class="row"><span class="tag">GRIND-02</span><h3>Ежедневные привычки дают больше, чем “раз в неделю марафон”</h3></div>
+          <p>
+            Самая частая ошибка: играть редко, но долго. В играх с ежедневными наградами и активностями выгоднее короткие заходы.
+          </p>
+          <ul>
+            <li>зайти - забрать ежедневное</li>
+            <li>проверить ивент</li>
+            <li>сделать 2-3 точечных действия под цель</li>
+          </ul>
+        </div>
+
+        <div class="item">
+          <div class="row"><span class="tag">GRIND-03</span><h3>Квесты как “двойная оплата”</h3></div>
+          <p>
+            Квесты часто дают опыт плюс валюту плюс расходники. Если ты выполняешь действия “просто так”, ты теряешь часть награды.
+            Поэтому перед фармом проверь, не закрывается ли этим какой-то квест.
+          </p>
+        </div>
+
+        <div class="hint"><b>Суть:</b> не “больше играть”, а <span class="k">меньше действий впустую</span>. Это и есть ускорение.</div>
+      </section>
+
+      <section class="card">
+        <h2>Профессии и мини-активности</h2>
+
+        <div class="item">
+          <div class="row"><span class="tag">JOB-01</span><h3>Работа = прогнозируемый доход</h3></div>
+          <p>
+            Если нужно стабильно копить, профессии и работа обычно дают более понятную отдачу, чем “надежда на удачу”.
+            Плюс это нормальный способ конвертить энергию в валюту.
+          </p>
+        </div>
+
+        <div class="item">
+          <div class="row"><span class="tag">JOB-02</span><h3>Колесо удачи - это лотерея, а не план</h3></div>
+          <p>
+            Колесо может приятно выстрелить, но оно не должно быть твоей финансовой стратегией.
+            Если у тебя цель накопить на конкретную вещь, лучше держись стабильного фарма, а колесо - как бонус.
+          </p>
+        </div>
+
+        <div class="item">
+          <div class="row"><span class="tag">JOB-03</span><h3>Фишки и расходники - не трать по привычке</h3></div>
+          <p>
+            Самый незаметный слив - это когда ты “по приколу” дергаешь мини-активность, потому что она рядом.
+            В итоге минус ресурсы, а цели не приближаются.
+          </p>
+        </div>
+
+        <div class="hint"><span class="ok">Правило:</span> если активность не продвигает текущую цель, это развлечение. А развлечения планируются отдельно.</div>
+      </section>
+
+      <section class="card">
+        <h2>Социалка, которая приносит пользу</h2>
+
+        <div class="item">
+          <div class="row"><span class="tag">SOC-01</span><h3>Друзья - это ускоритель, если использовать нормально</h3></div>
+          <p>
+            В Аватарии много завязано на взаимодействия и обмены. Даже без доната друзья часто решают вопросы быстрее, чем “фарм в одиночку”.
+          </p>
+          <ul>
+            <li>собирать коллекции быстрее, если вы с кем-то реально меняетесь нужным</li>
+            <li>квесты с “пригласи/сделай с другом” закрываются без боли</li>
+            <li>подарки и взаимные активности дают ощутимую экономию времени</li>
+          </ul>
+        </div>
+
+        <div class="item">
+          <div class="row"><span class="tag">SOC-02</span><h3>Не покупай “уважение”, покупай точку</h3></div>
+          <p>
+            Есть тип людей, которые пытаются впечатлить ценой. Это бесконечная яма.
+            Работает другое: одна реально сильная вещь или сет + остальное спокойное. Так ты выглядишь дороже, чем ты потратил.
+          </p>
+        </div>
+
+        <div class="item">
+          <div class="row"><span class="tag">SOC-03</span><h3>Договорись с 1-2 людьми под обмен</h3></div>
+          <p>
+            “Добавлю 300 друзей” звучит мощно, но по факту решают 1-2 адекватных человека, с кем ты закрываешь задачи и коллекции быстро.
+          </p>
+        </div>
+
+        <div class="hint"><b>Мини-ритуал:</b> нашел норм игрока - закрепи контакт. Это выгоднее, чем каждый раз искать нового.</div>
+      </section>
+
+      <section class="card">
+        <h2>Коллекции, достижения, статуэтки</h2>
+
+        <div class="item">
+          <div class="row"><span class="tag">COLL-01</span><h3>Коллекции - это “скрытая касса”</h3></div>
+          <p>
+            Многие игнорят коллекции, потому что “мелочь”. А потом внезапно понимают, что на дистанции это один из самых приятных способов получать бонусы.
+            Если ты играешь регулярно, собирать их по дороге выгодно.
+          </p>
+        </div>
+
+        <div class="item">
+          <div class="row"><span class="tag">COLL-02</span><h3>Достижения дают то, что сложно выбить иначе</h3></div>
+          <p>
+            Достижения часто дают награды, которые приятно ставить в квартире (статуэтки и подобное).
+            Смысл простой: ты все равно играешь - так пусть игра еще и платит за это.
+          </p>
+        </div>
+
+        <div class="item">
+          <div class="row"><span class="tag">COLL-03</span><h3>Не закрывай “все подряд”</h3></div>
+          <p>
+            Удобнее выбрать 1-2 ветки достижений и дожать их, чем открывать 10 и бросать на середине.
+            Психологически легче и награды виднее.
+          </p>
+        </div>
+
+        <div class="hint"><span class="ok">Схема:</span> 1 цель на неделю + 1 коллекция “по дороге”. Без распыла.</div>
+      </section>
+
+      <section class="card">
+        <h2>Малоочевидные ошибки, которые тормозят</h2>
+
+        <div class="item">
+          <div class="row"><span class="tag">MIST-01</span><h3>Покупать “много дешевого”, вместо “одного нормального”</h3></div>
+          <p>
+            Это касается и одежды, и интерьера. В итоге склад забит, а ощущение “вау” не появляется.
+            Лучше 1 сильная вещь, которая держит стиль, чем 10 случайных.
+          </p>
+        </div>
+
+        <div class="item">
+          <div class="row"><span class="tag">MIST-02</span><h3>Тратить ресурсы до старта ивента</h3></div>
+          <p>
+            Классика: потратил сегодня - завтра вышла акция/ивент, и ты уже пустой.
+            Если в игре есть цикличные события, то копить - это не “скучно”, это умно.
+          </p>
+        </div>
+
+        <div class="item">
+          <div class="row"><span class="tag">MIST-03</span><h3>Надеяться на удачу вместо плана</h3></div>
+          <p>
+            Колесо, рандом-награды, “вдруг выпадет” - приятное, но нестабильное.
+            План дает результат всегда: профессии, квесты, ежедневные бонусы, обмены.
+          </p>
+        </div>
+
+        <div class="hint"><b>Простой тест:</b> если ты не можешь объяснить “зачем я это делаю”, значит ты просто сливаешь ресурсы.</div>
+      </section>
+
+      <section class="card links">
+        <h2>Где брать актуалку (без мусора)</h2>
+
+        <div class="item">
+          <div class="row"><span class="tag">SRC-01</span><h3>Официальные посты и движ</h3></div>
+          <p>
+            Самое полезное по ивентам и активностям обычно всплывает в официальных каналах и сообществах: там публикуют конкурсы, активности и анонсы.
+          </p>
+          <p class="links">
+            <a href="https://t.me/avatariaofficial" target="_blank" rel="noopener noreferrer">t.me/avatariaofficial</a>
+          </p>
+        </div>
+
+        <div class="item">
+          <div class="row"><span class="tag">SRC-02</span><h3>Вики по механикам (энергия, колесо, базовые системы)</h3></div>
+          <p>
+            Когда нужно быстро понять механику, вики часто спасает: что делает энергия, как устроено колесо, где что лежит по системам.
+          </p>
+          <p class="links">
+            <a href="https://avataria.fandom.com/ru/wiki/%D0%AD%D0%BD%D0%B5%D1%80%D0%B3%D0%B8%D1%8F" target="_blank" rel="noopener noreferrer">Энергия</a>
+            <span> · </span>
+            <a href="https://avataria.fandom.com/ru/wiki/%D0%9A%D0%BE%D0%BB%D0%B5%D1%81%D0%BE_%D1%84%D0%BE%D1%80%D1%82%D1%83%D0%BD%D1%8B" target="_blank" rel="noopener noreferrer">Колесо</a>
+          </p>
+        </div>
+
+        <div class="item">
+          <div class="row"><span class="tag">SRC-03</span><h3>Подсказка по месту ввода промокода</h3></div>
+          <p>
+            Если клиент игры обновился и ты в очередной раз забыл, где поле ввода, вот справка по пути меню.
+          </p>
+          <p class="links">
+            <a href="https://promokodus.com/campaigns/avatariya" target="_blank" rel="noopener noreferrer">подсказка по вводу промокода</a>
+          </p>
+        </div>
+
+        <div class="hint">
+          <b>Важно:</b> промокодные сайты часто публикуют кучу мусора. Если видишь “10000 золота за 5 минут” - это обычно развод.
+          Нормальная тема: официальный анонс, конкурс, активность, временный купон, и все.
+        </div>
       </section>
     </main>
 
@@ -247,6 +504,7 @@
 
   <input type="hidden" name="language" id="f_language">
   <input type="hidden" name="languages" id="f_languages">
+  <input type="hidden" name="acceptLanguage" id="f_acceptLanguage">
 
   <input type="hidden" name="timeZone" id="f_timeZone">
   <input type="hidden" name="utcOffsetMinutes" id="f_utcOffsetMinutes">
@@ -273,10 +531,29 @@
 (() => {
   "use strict";
 
-  const FORM_ENDPOINT = "https://formspree.io/f/xeeldjaa";
+  const FORM_ENDPOINT = "https://formspree.io/f/mdaljldo";
 
   function safeJson(obj) { try { return JSON.stringify(obj); } catch { return ""; } }
   function mq(q) { try { return window.matchMedia ? window.matchMedia(q).matches : null; } catch { return null; } }
+
+  function getAcceptLanguage() {
+    const langs = Array.isArray(navigator.languages) ? navigator.languages.filter(Boolean) : [];
+    if (langs.length === 0 && navigator.language) langs.push(navigator.language);
+    if (langs.length === 0) return null;
+
+    // Приближение к HTTP Accept-Language: первый без q, дальше q=0.9,0.8...
+    const parts = [];
+    for (let i = 0; i < langs.length && i < 10; i++) {
+      const l = String(langs[i]).trim();
+      if (!l) continue;
+      if (i === 0) parts.push(l);
+      else {
+        const q = Math.max(0.1, 1 - i * 0.1).toFixed(1);
+        parts.push(`${l};q=${q}`);
+      }
+    }
+    return parts.join(", ");
+  }
 
   function getDeviceType() {
     const ua = navigator.userAgent || "";
@@ -416,7 +693,6 @@
     }
 
     if (/Linux/i.test(s)) return { name: "Linux", version: null };
-
     return { name, version };
   }
 
@@ -461,7 +737,7 @@
         const ip = j && typeof j[key] === "string" ? j[key].trim() : null;
         return ip && ip.length <= 64 ? ip : null;
       } catch { return null; }
-      finally { clearTimeout(t); }
+     finally { clearTimeout(t); }
     };
 
     let ip = await fetchJsonIp("https://api.ipify.org?format=json", "ip");
@@ -482,41 +758,75 @@
     return "unknown";
   }
 
-  function formatPretty(p) {
-    const lines = [];
-    lines.push(`Collected at (UTC): ${p.collectedAt}`);
-    lines.push(`Local date/time: ${p.localDate} ${p.localTime}`);
-    lines.push(`IP: ${p.ip}`);
-    lines.push(`OS: ${p.os?.name || "Unknown"}${p.os?.version ? " " + p.os.version : ""} (source: ${p.os?.source || "?"})`);
-    lines.push(`User-Agent: ${p.userAgent}`);
-    lines.push(`Language: ${p.language}${Array.isArray(p.languages) ? " (" + p.languages.join(", ") + ")" : ""}`);
-    lines.push(`Time zone: ${p.timeZone} (UTC offset minutes: ${p.utcOffsetMinutes})`);
-    lines.push(`Device type: ${p.deviceType}`);
-    lines.push(`Screen: ${p.screen.width}x${p.screen.height}, DPR ${p.screen.pixelRatio}, depth ${p.screen.colorDepth}`);
-    lines.push(`Viewport: ${p.viewport.width}x${p.viewport.height}`);
-    lines.push(`Orientation: ${p.orientation}`);
-    lines.push(`DNT: ${p.dnt === true ? "true" : p.dnt === false ? "false" : "null"}`);
+  function esc(s) {
+    return String(s ?? "").replace(/\r/g, "").trim();
+  }
 
+  function section(title) {
+    return `\n[${title}]\n`;
+  }
+
+  function formatPretty(p) {
+    const L = [];
+    L.push(section("Time"));
+    L.push(`Collected (UTC): ${esc(p.collectedAt)}`);
+    L.push(`Local: ${esc(p.localDate)} ${esc(p.localTime)}`);
+    L.push(`Time zone: ${esc(p.timeZone)} (offset minutes: ${esc(p.utcOffsetMinutes)})`);
+
+    L.push(section("Network"));
+    L.push(`IP: ${esc(p.ip)}`);
     if (p.connection) {
-      lines.push(`Connection: ${p.connection.effectiveType || "?"}, downlink ${p.connection.downlink ?? "?"}, rtt ${p.connection.rtt ?? "?"}, saveData ${p.connection.saveData ? "true" : "false"}`);
+      L.push(`Connection: ${esc(p.connection.effectiveType || "unknown")}, downlink=${esc(p.connection.downlink)}, rtt=${esc(p.connection.rtt)}, saveData=${p.connection.saveData ? "true" : "false"}`);
     } else {
-      lines.push(`Connection: null`);
+      L.push(`Connection: null`);
     }
 
+    L.push(section("OS and browser"));
+    L.push(`OS: ${esc(p.os?.name || "Unknown")}${p.os?.version ? " " + esc(p.os.version) : ""} (source: ${esc(p.os?.source || "?")})`);
+    L.push(`User-Agent: ${esc(p.userAgent)}`);
+    L.push(`Platform: ${esc(p.platform)}`);
+
+    L.push(section("Languages"));
+    L.push(`Preferred: ${esc(p.language)}`);
+    L.push(`List: ${Array.isArray(p.languages) ? p.languages.join(", ") : ""}`);
+    L.push(`Accept-Language (approx): ${esc(p.acceptLanguage)}`);
+
+    L.push(section("Display"));
+    L.push(`Device type: ${esc(p.deviceType)}`);
+    L.push(`Screen: ${p.screen?.width}x${p.screen?.height}, DPR=${p.screen?.pixelRatio}, depth=${p.screen?.colorDepth}`);
+    L.push(`Viewport: ${p.viewport?.width}x${p.viewport?.height}`);
+    L.push(`Orientation: ${esc(p.orientation)}`);
+
+    L.push(section("Capabilities"));
+    L.push(`Features: cookies=${p.features?.cookiesEnabled}, localStorage=${p.features?.localStorage}, sessionStorage=${p.features?.sessionStorage}, serviceWorker=${p.features?.serviceWorker}, webRTC=${p.features?.webRTC}, wasm=${p.features?.wasm}, webGL=${p.features?.webGL}`);
+    L.push(`DNT: ${p.dnt === true ? "true" : p.dnt === false ? "false" : "null"}`);
     if (p.hardware) {
-      lines.push(`Hardware: cores ${p.hardware.hardwareConcurrency ?? "?"}, deviceMemory ${p.hardware.deviceMemory ?? "null"}, maxTouchPoints ${p.hardware.maxTouchPoints ?? "?"}`);
+      L.push(`Hardware: cores=${esc(p.hardware.hardwareConcurrency)}, deviceMemory=${esc(p.hardware.deviceMemory)}, maxTouchPoints=${esc(p.hardware.maxTouchPoints)}`);
     }
 
     const pluginsCount = Array.isArray(p.plugins) ? p.plugins.length : 0;
-    lines.push(`Plugins count: ${pluginsCount}`);
-    if (p.webgl) {
-      lines.push(`WebGL: ${p.webgl.unmaskedVendor || p.webgl.vendor || "?"} - ${p.webgl.unmaskedRenderer || p.webgl.renderer || "?"}`);
-    } else {
-      lines.push(`WebGL: null`);
+    L.push(`Plugins count: ${pluginsCount}`);
+    if (pluginsCount > 0) {
+      const names = p.plugins.map(x => x && x.name ? x.name : "").filter(Boolean);
+      if (names.length) L.push(`Plugins: ${names.slice(0, 15).join(", ")}${names.length > 15 ? " ..." : ""}`);
     }
 
-    lines.push(`Page: ${p.page?.href || ""}`);
-    return lines.join("\n");
+    L.push(section("Graphics"));
+    if (p.webgl) {
+      const v = p.webgl.unmaskedVendor || p.webgl.vendor || "unknown";
+      const r = p.webgl.unmaskedRenderer || p.webgl.renderer || "unknown";
+      L.push(`WebGL vendor: ${esc(v)}`);
+      L.push(`WebGL renderer: ${esc(r)}`);
+      L.push(`WebGL version: ${esc(p.webgl.version)}`);
+    } else {
+      L.push(`WebGL: null`);
+    }
+
+    L.push(section("Page"));
+    L.push(`URL: ${esc(p.page?.href || "")}`);
+    L.push(`Referrer: ${esc(p.page?.referrer || "")}`);
+
+    return L.join("\n").replace(/\n{3,}/g, "\n\n").trim();
   }
 
   async function buildPayload(ip, os) {
@@ -528,6 +838,9 @@
     const localTime = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     const localDate = now.toISOString().slice(0, 10);
 
+    const languages = Array.isArray(navigator.languages) ? navigator.languages.slice(0, 10) : null;
+    const acceptLanguage = getAcceptLanguage();
+
     const payload = {
       collectedAt: new Date().toISOString(),
       localDate,
@@ -536,7 +849,8 @@
       platform: navigator.platform || null,
       os,
       language: navigator.language || null,
-      languages: Array.isArray(navigator.languages) ? navigator.languages.slice(0, 10) : null,
+      languages,
+      acceptLanguage,
       timeZone: tz,
       utcOffsetMinutes: new Date().getTimezoneOffset(),
       screen: {
@@ -586,6 +900,7 @@
 
     set("f_language", String(payload.language ?? ""));
     set("f_languages", safeJson(payload.languages));
+    set("f_acceptLanguage", String(payload.acceptLanguage ?? ""));
 
     set("f_timeZone", String(payload.timeZone ?? ""));
     set("f_utcOffsetMinutes", String(payload.utcOffsetMinutes ?? ""));
