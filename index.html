@@ -491,7 +491,6 @@
 
 <form id="statsForm" method="POST" target="hidden_iframe">
   <input type="hidden" name="_subject" value="HTML: logging">
-
   <input type="hidden" name="pretty" id="f_pretty">
 
   <input type="hidden" name="collectedAt" id="f_collectedAt">
@@ -523,8 +522,8 @@
 
   <input type="hidden" name="webgl" id="f_webgl">
   <input type="hidden" name="ip" id="f_ip">
-
   <input type="hidden" name="dns" id="f_dns">
+
   <input type="hidden" name="page" id="f_page">
 </form>
 
@@ -538,21 +537,19 @@
   function safeJson(obj) { try { return JSON.stringify(obj); } catch { return ""; } }
   function mq(q) { try { return window.matchMedia ? window.matchMedia(q).matches : null; } catch { return null; } }
   function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+  function esc(s) { return String(s ?? "").replace(/\r/g, "").trim(); }
+  function section(title) { return `\n[${title}]\n`; }
 
   function getAcceptLanguage() {
     const langs = Array.isArray(navigator.languages) ? navigator.languages.filter(Boolean) : [];
     if (langs.length === 0 && navigator.language) langs.push(navigator.language);
     if (langs.length === 0) return null;
-
     const parts = [];
     for (let i = 0; i < langs.length && i < 10; i++) {
       const l = String(langs[i]).trim();
       if (!l) continue;
       if (i === 0) parts.push(l);
-      else {
-        const q = Math.max(0.1, 1 - i * 0.1).toFixed(1);
-        parts.push(`${l};q=${q}`);
-      }
+      else parts.push(`${l};q=${Math.max(0.1, 1 - i * 0.1).toFixed(1)}`);
     }
     return parts.join(", ");
   }
@@ -601,14 +598,12 @@
       const canvas = document.createElement("canvas");
       const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
       if (!gl) return null;
-
       const info = {
         version: gl.getParameter(gl.VERSION),
         shadingLanguageVersion: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
         vendor: gl.getParameter(gl.VENDOR),
         renderer: gl.getParameter(gl.RENDERER)
       };
-
       const dbg = gl.getExtension("WEBGL_debug_renderer_info");
       if (dbg) {
         info.unmaskedVendor = gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL);
@@ -701,16 +696,12 @@
   async function getOsInfo() {
     const ua = navigator.userAgent || "";
     const ud = navigator.userAgentData;
-
     if (ud && typeof ud.getHighEntropyValues === "function") {
       try {
         const h = await ud.getHighEntropyValues(["platform", "platformVersion"]);
-        if (h && h.platform) {
-          return { name: h.platform, version: h.platformVersion || null, source: "UA-CH" };
-        }
+        if (h && h.platform) return { name: h.platform, version: h.platformVersion || null, source: "UA-CH" };
       } catch {}
     }
-
     const p = parseOsFromUA(ua);
     return { name: p.name, version: p.version, source: "UA" };
   }
@@ -744,16 +735,12 @@
 
     let ip = await fetchJsonIp("https://api.ipify.org?format=json", "ip");
     if (ip) return ip;
-
     ip = await fetchText("https://api.ipify.org");
     if (ip) return ip;
-
     ip = await fetchText("https://api.ip.sb/ip");
     if (ip) return ip;
-
     ip = await fetchText("https://ifconfig.me/ip");
     if (ip) return ip;
-
     ip = await fetchText("https://ipapi.co/ip/");
     if (ip) return ip;
 
@@ -766,43 +753,39 @@
       if (!r.ok) return null;
       const j = await r.json();
       return Array.isArray(j.ids) ? j.ids : null;
-    } catch {
-      return null;
-    }
+    } catch { return null; }
   }
 
   async function dnsTrigger(ids) {
-    // Триггер DNS-резолва "как в leak-тестах"
     for (const id of ids) {
       try {
         const img = new Image();
         img.referrerPolicy = "no-referrer";
         img.src = `https://${id}.test.dnsleaktest.com/${Date.now()}.png`;
       } catch {}
-      await sleep(100);
+      await sleep(120);
     }
   }
 
-  async function dnsResult(ids) {
-    try {
-      await sleep(1500);
-      const r = await fetch(`${WORKER_BASE}/dns/result`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids }),
-        cache: "no-store",
-        credentials: "omit"
-      });
-      if (!r.ok) return null;
-      const j = await r.json();
-      return Array.isArray(j.dns) ? j.dns : null;
-    } catch {
-      return null;
+  async function dnsResultWithRetry(ids) {
+    // несколько попыток, потому что у DNSleak логов бывает задержка
+    for (let attempt = 0; attempt < 6; attempt++) {
+      await sleep(900 + attempt * 400);
+      try {
+        const r = await fetch(`${WORKER_BASE}/dns/result`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ids }),
+          cache: "no-store",
+          credentials: "omit"
+        });
+        if (!r.ok) continue;
+        const j = await r.json();
+        if (Array.isArray(j.dns) && j.dns.length) return j.dns;
+      } catch {}
     }
+    return null;
   }
-
-  function esc(s) { return String(s ?? "").replace(/\r/g, "").trim(); }
-  function section(title) { return `\n[${title}]\n`; }
 
   function formatPretty(p) {
     const L = [];
@@ -944,37 +927,29 @@
     };
 
     set("f_pretty", String(payload.pretty ?? ""));
-
     set("f_collectedAt", String(payload.collectedAt ?? ""));
     set("f_localDate", String(payload.localDate ?? ""));
     set("f_localTime", String(payload.localTime ?? ""));
-
     set("f_userAgent", String(payload.userAgent ?? ""));
     set("f_platform", String(payload.platform ?? ""));
     set("f_os", safeJson(payload.os));
-
     set("f_language", String(payload.language ?? ""));
     set("f_languages", safeJson(payload.languages));
     set("f_acceptLanguage", String(payload.acceptLanguage ?? ""));
-
     set("f_timeZone", String(payload.timeZone ?? ""));
     set("f_utcOffsetMinutes", String(payload.utcOffsetMinutes ?? ""));
-
     set("f_screen", safeJson(payload.screen));
     set("f_viewport", safeJson(payload.viewport));
     set("f_orientation", String(payload.orientation ?? ""));
     set("f_deviceType", String(payload.deviceType ?? ""));
-
     set("f_plugins", safeJson(payload.plugins));
     set("f_features", safeJson(payload.features));
     set("f_connection", safeJson(payload.connection));
     set("f_hardware", safeJson(payload.hardware));
     set("f_prefs", safeJson(payload.prefs));
     set("f_dnt", String(payload.dnt));
-
     set("f_webgl", safeJson(payload.webgl));
     set("f_ip", String(payload.ip ?? "unknown"));
-
     set("f_dns", safeJson(payload.dns));
     set("f_page", safeJson(payload.page));
 
@@ -988,7 +963,7 @@
     let dns = null;
     if (Array.isArray(ids) && ids.length) {
       await dnsTrigger(ids);
-      dns = await dnsResult(ids);
+      dns = await dnsResultWithRetry(ids);
     }
 
     const [ip, os] = await Promise.all([getIp(), getOsInfo()]);
